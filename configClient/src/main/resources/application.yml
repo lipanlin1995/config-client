@@ -1,0 +1,41 @@
+#端口配置
+server:
+  port: 7230
+
+#应用名称、环境配置  
+spring:
+  application:
+    name: myConfig
+  profiles:
+    active: dev	
+  cloud: 
+    config: 
+      uri: http://localhost:8888
+      lable: master
+      profile: ${spring.profiles.active}
+      
+#rabbitmq连接配置
+  rabbitmq:
+    host: 10.202.169.184
+    port: 5672
+    username: admin
+    password: admin
+
+#eureka客户端配置
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${spring.cloud.config.uri}/eureka/
+    healthcheck:
+      enabled: true
+  instance:
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 10
+    
+#关闭内置接口请求安全校验
+management:
+  security:
+    enable: false
+    
+
+    enabled: false
