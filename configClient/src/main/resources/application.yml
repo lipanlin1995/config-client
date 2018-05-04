@@ -35,7 +35,4 @@ eureka:
 #关闭内置接口请求安全校验
 management:
   security:
-    enable: false
-    
-
     enabled: false
