@@ -1,4 +1,9 @@
-#应用名称、环境配置  
+#端口、上下文配置
+server:
+  port: 7210
+  context-path: /myConfig
+
+#应用名称、环境和远程配置
 spring:
   application:
     name: myConfig
@@ -6,7 +11,6 @@ spring:
     active: dev	
   cloud: 
     config: 
-      uri: http://localhost:8888
+      uri: http://localhost:8888/
       lable: master
       profile: ${spring.profiles.active}
-
