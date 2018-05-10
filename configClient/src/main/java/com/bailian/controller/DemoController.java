@@ -6,6 +6,7 @@
 package com.bailian.controller;
 
 
+import java.net.URI;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -13,9 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.bailian.feignClient.DemoFeignService;
 
@@ -35,6 +39,10 @@ public class DemoController {
     private DemoFeignService demoFeignService;
     @Autowired
     private AmqpTemplate amqpTemplate;
+    @Autowired
+    private LoadBalancerClient loadBalancerClient;
+    @Autowired
+    private RestTemplate restTemplate; 
     
     
     @Value("${spring.kafka.consumer.servers}")
@@ -56,5 +64,14 @@ public class DemoController {
         logger.info("发送rabbitMq消息:" + context);
         amqpTemplate.convertAndSend("test", context);
         return "ok";
+    }
+    
+    
+    @RequestMapping("/ribbonFindUser")
+    public String ribbonFindUser(){
+        ServiceInstance instance = this.loadBalancerClient.choose("myConfigA");
+        URI helloUri = URI.create(String.format("http://%s:%s/myConfigA/user/getUserInfo", instance.getHost(), instance.getPort()));        
+        logger.info("Target service uri = {}", helloUri.toString());
+        return new RestTemplate().getForObject(helloUri, String.class);
     }
 }
